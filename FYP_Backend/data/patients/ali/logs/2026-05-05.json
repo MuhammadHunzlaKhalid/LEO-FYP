@@ -1,0 +1,92 @@
+[
+  {
+    "time": "08:27:25",
+    "category": "chat",
+    "content": "User: tell me story | Leo: Of course! Let's start with a story.\n\n---\n\nOnce upon a time, there was a young man named Alex who lived in a small town nestled between rolling hills and whispering woods. Alex had always been fascinated by nature and loved exploring its depths. One day, while wandering through the forest, he stumbled upon a hidden cave deep within the mountains.\n\nAs he explored deeper into the cave, Alex found something strange - ancient relics that spoke to him. They told him of a world far away where",
+    "severity": "info"
+  },
+  {
+    "time": "08:28:21",
+    "category": "chat",
+    "content": "User: good call Ayesha | Leo: Calling your daughter, Ayesha (03106646486) now...",
+    "severity": "info"
+  },
+  {
+    "time": "08:28:33",
+    "category": "chat",
+    "content": "User: Conor with your daughter, I love you. | Leo: Thank you for being kind, Ayesha (03106646486). Is there anything else I can assist you with?",
+    "severity": "info"
+  },
+  {
+    "time": "08:28:36",
+    "category": "medication",
+    "content": "tell me about my medicine",
+    "severity": "info"
+  },
+  {
+    "time": "08:28:36",
+    "category": "chat",
+    "content": "User: tell me about my medicine | Leo: Your medication schedule: panadol at 7:00.",
+    "severity": "info"
+  },
+  {
+    "time": "08:29:10",
+    "category": "emotion",
+    "content": "tired: i feel tired",
+    "severity": "warning"
+  },
+  {
+    "time": "08:29:10",
+    "category": "chat",
+    "content": "User: i feel tired | Leo: You sound tired, Ali. Rest is very important. Can I get you a reminder to take a nap, or would you like some water?",
+    "severity": "info"
+  },
+  {
+    "time": "08:29:27",
+    "category": "reminder",
+    "content": "reminder to take a nap",
+    "severity": "info"
+  },
+  {
+    "time": "08:29:32",
+    "category": "chat",
+    "content": "User: reminder to take a nap | Leo: I see, Ali. Taking a nap will help you feel more rested. How about we have a quick chat before bed? We could talk about your plans for the evening or discuss any concerns you might have.",
+    "severity": "info"
+  },
+  {
+    "time": "08:30:21",
+    "category": "chat",
+    "content": "User: well i want to up by 7 so i can go to university | Leo: Great plan, Ali! Remember, taking care of yourself is essential, especially when preparing for studies. Do you need any other advice on how to manage your responsibilities during the day?",
+    "severity": "info"
+  },
+  {
+    "time": "08:30:52",
+    "category": "chat",
+    "content": "User: no i pass | Leo: Well done, Ali! It\u2019s great to hear that you\u2019re making progress in your academic pursuits. If you ever need any assistance or support, don\u2019t hesitate to reach out. Remember, maintaining good health is key to achieving success in both personal and professional endeavors. Keep up the good work!",
+    "severity": "info"
+  },
+  {
+    "time": "08:31:37",
+    "category": "chat",
+    "content": "User: I'll tell not to worry about anyone from all around the world. It's worth experiencing on this episode. | Leo: Absolutely, Ali! Exploring the world has many benefits. It's a great way to broaden your horizons and learn about different cultures and ways of life. Remember, it's okay to be curious and open-minded. Keep up the journey!",
+    "severity": "info"
+  },
+  {
+    "time": "08:32:15",
+    "category": "chat",
+    "content": "User: ok thanok thanks good bye | Leo: You're welcome, Ali. Have a wonderful day ahead! Stay healthy, and enjoy every moment. Goodbye, Ali (03106646486).",
+    "severity": "info"
+  },
+  {
+    "time": "08:32:58",
+    "category": "chat",
+    "content": "User: or quit. | Leo: Oh, I see what you did there, Ali (03106646486). Quitting can sometimes lead to a less fulfilling experience. But remember, taking breaks and enjoying the present moment is crucial. What brings you joy today?",
+    "severity": "info"
+  },
+  {
+    "time": "08:33:30",
+    "category": "chat",
+    "content": "User: qquit | Leo: Got it, Ali (03106646486). Let's make the most of our time together and keep each other company. See you soon, Ali.",
+    "severity": "info"
+  }
+]

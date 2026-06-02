@@ -1,0 +1,935 @@
+"""
+FYP Elderly Fall Detection — v18 (Video Save Edition)
+======================================================
+Changes over v17:
+
+  VIDEO SAVING:
+    • ContinuousRecorder  — saves full session as .avi
+    • FallClipSaver       — saves 10s pre + 10s post fall clip
+    • All files stored under data/patients/{name}/videos/{date}/
+
+  PATIENT FOLDER:
+    • Uses PatientDirs from patient_storage.py
+    • Profile, memory, logs all under data/patients/{name}/
+
+  Setup:
+    1. pip install opencv-python ultralytics torch
+    2. Set VIDEO_PATH and model paths below
+    3. Run:  python final_monitering_brain.py [patient_name]
+
+FYP 2024-25 | Hunzla Khalid, Ayesha Abaidullah, Shaiq Bhatti
+Supervisor: Dr. Zia Ul Rehman
+"""
+
+import cv2
+import numpy as np
+from ultralytics import YOLO
+import torch
+from collections import deque
+import os
+import sys
+import json
+import math
+
+# ── FYP modules ──────────────────────────────────────────
+from patient_storage       import PatientDirs
+from video_recorder        import VideoSession
+from patait_info_collector import AIBrainProfile
+
+# ══════════════════════════════════════════════════════
+# CONFIGURATION
+# ══════════════════════════════════════════════════════
+VIDEO_PATH = "D:\\Python\\FYP\\AI_Model_vision_chat\\testing_vedios\\cofeeroom_video (56).avi"   # or 0 for webcam
+# VIDEO_PATH = 0
+FRAME_W    = 640
+FRAME_H    = 480
+
+FALL_MODEL_PATH = (
+    "D:\\Python\\FYP\\Trained Datasets\\"
+    "GPT_fyp_train_dataset_fall_v2.1\\runs_backup\\detect\\"
+    "runs\\train\\fall_stage1\\weights\\best.pt"
+)
+POSTURE_MODEL_PATH = (
+    "D:\\Python\\FYP\\Trained Datasets\\"
+    "GPT_fyp_train_dataset_lying1_posture_v2.1\\runs_backup\\detect\\"
+    "runs\\train\\siting_stage1\\weights\\best.pt"
+)
+
+# ══════════════════════════════════════════════════════
+# STEP 1 — PATIENT INFO COLLECTOR (pehle chalta hai)
+# ══════════════════════════════════════════════════════
+print("\n" + "="*50)
+print("   LEO — AI Home Assistant for the Elderly")
+print("   FYP 2024-25 | BSCS")
+print("="*50)
+
+_collector       = AIBrainProfile()
+_collector.startup()
+_patient_profile = _collector.get_profile()
+PATIENT_NAME     = _patient_profile["personal"]["name"].lower().replace(" ", "_")
+
+print(f"\n[INFO] Patient: {PATIENT_NAME}")
+print("[INFO] Models load ho rahe hain, thoda wait karo...\n")
+
+# ── Patient folder paths ──────────────────────────────
+patient_dirs = PatientDirs(PATIENT_NAME)
+ZONES_FILE   = str(patient_dirs.root / "safe_zones.json")
+
+# ══════════════════════════════════════════════════════
+# DETECTION PARAMETERS  (unchanged from v17)
+# ══════════════════════════════════════════════════════
+LYING_CONFIRM_FRAMES           = 8
+STANDING_CONFIRM_FRAMES        = 3
+POSTURE_PERSIST_FRAMES         = 8
+LYING_ASPECT_RATIO_MAX         = 1.2
+SITTING_CONFIRM_FOR_PREPOSTURE = 3
+
+DROP_FAST_PX       = 7
+DROP_ANY_PX        = 3
+AREA_CHANGE_HIGH   = 0.12
+AREA_CHANGE_ANY    = 0.05
+SUDDEN_DROP_THRESH = 7.0
+SUDDEN_AREA_THRESH = 0.20
+FLOW_SPIKE_THRESH  = 1.4
+FLOW_ANY_THRESH    = 0.7
+FLOW_STILL_THRESH  = 0.9
+ASPECT_DROP_THRESH = 0.18
+FALL_MODEL_CONSEC  = 2
+FALL_SCORE_NEEDED  = 4
+ANALYSIS_START     = 4
+ANALYSIS_END       = 40
+PRE_LYING_WINDOW   = 25
+POST_LYING_WINDOW  = 10
+UPRIGHT_LOOKBACK   = 55
+MIN_UPRIGHT_FRAMES = 15
+FALL_LATCH_FRAMES     = 65
+RECOVERY_LATCH_FRAMES = 25
+
+# ══════════════════════════════════════════════════════
+# COLORS & METADATA
+# ══════════════════════════════════════════════════════
+ZONE_COLORS = {
+    "bed":  (0,   200, 255),
+    "sofa": (0,   140, 255),
+}
+TYPE_ORDER = ["bed", "sofa"]
+
+STATE_META = {
+    "FALL":              ((0,   0,   220), "!"),
+    "LYING (POST-FALL)": ((0,   60,  190), "!"),
+    "LYING (SAFE)":      ((140, 80,  0),   "~"),
+    "LYING (ON BED)":    ((0,   110, 150), "~"),
+    "LYING (ON SOFA)":   ((0,   90,  165), "~"),
+    "STANDING":          ((0,   160, 30),  "^"),
+    "SITTING":           ((0,   130, 120), "s"),
+    "RECOVERY":          ((130, 0,   160), "r"),
+    "UNKNOWN":           ((75,  75,  75),  "?"),
+    "STARTING":          ((60,  60,  60),  "."),
+}
+
+# ══════════════════════════════════════════════════════
+# DEVICE + MODELS
+# ══════════════════════════════════════════════════════
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"[INFO] Device: {device}")
+print(f"[INFO] Patient: {PATIENT_NAME}")
+print(f"[INFO] Data folder: {patient_dirs.root}")
+
+fall_model    = YOLO(FALL_MODEL_PATH).to(device)
+posture_model = YOLO(POSTURE_MODEL_PATH).to(device)
+
+if isinstance(VIDEO_PATH, str) and not os.path.exists(VIDEO_PATH):
+    print(f"[ERROR] Video not found: {VIDEO_PATH}")
+    sys.exit(1)
+
+# ══════════════════════════════════════════════════════
+# ZONE SAVE / LOAD
+# ══════════════════════════════════════════════════════
+
+def save_zones(zones, path=ZONES_FILE):
+    data = [{"type": z["type"], "box": list(z["box"])} for z in zones]
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2)
+    print(f"[ZONES] Saved {len(zones)} zone(s) → {path}")
+
+
+def load_zones(path=ZONES_FILE):
+    if not os.path.exists(path):
+        print(f"[ZONES] No saved file at {path}")
+        return []
+    try:
+        with open(path) as f:
+            data = json.load(f)
+        zones = [{"type": d["type"], "box": tuple(d["box"])} for d in data]
+        print(f"[ZONES] Loaded {len(zones)} zone(s)")
+        return zones
+    except Exception as e:
+        print(f"[ZONES] Load error: {e}")
+        return []
+
+
+def person_zone(person_box, zones):
+    if person_box is None or not zones:
+        return None
+    cx = (person_box[0] + person_box[2]) / 2
+    cy = (person_box[1] + person_box[3]) / 2
+    for z in zones:
+        x1, y1, x2, y2 = z["box"]
+        if x1 <= cx <= x2 and y1 <= cy <= y2:
+            return z
+    return None
+
+
+def person_in_safe_zone(person_box, zones):
+    return person_zone(person_box, zones) is not None
+
+
+# ══════════════════════════════════════════════════════
+# SHARED DRAW HELPERS  (same as v17)
+# ══════════════════════════════════════════════════════
+
+def draw_pill_label(img, text, x, y, col, scale=0.40, pad=4):
+    (tw, th), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, scale, 1)
+    cv2.rectangle(img, (x-pad, y-th-pad), (x+tw+pad, y+pad), col, -1)
+    cv2.rectangle(img, (x-pad, y-th-pad), (x+tw+pad, y+pad), (255,255,255), 1)
+    cv2.putText(img, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, scale,
+                (255,255,255), 1, cv2.LINE_AA)
+
+
+def draw_crosshair(img, x, y, size=14, col=(0,255,180)):
+    cv2.line(img, (x-size, y), (x+size, y), col, 1, cv2.LINE_AA)
+    cv2.line(img, (x, y-size), (x, y+size), col, 1, cv2.LINE_AA)
+    cv2.circle(img, (x, y), 4, col, 1, cv2.LINE_AA)
+
+
+def draw_zone_on_frame(img, z, is_active=False):
+    x1, y1, x2, y2 = z["box"]
+    col   = ZONE_COLORS[z["type"]]
+    alpha = 0.22 if is_active else 0.12
+    ov    = img.copy()
+    cv2.rectangle(ov, (x1,y1), (x2,y2), col, -1)
+    cv2.addWeighted(ov, alpha, img, 1-alpha, 0, img)
+    cv2.rectangle(img, (x1,y1), (x2,y2), col, 2 if is_active else 1, cv2.LINE_AA)
+    label = z["type"].upper() + (" ●" if is_active else "")
+    (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.42, 1)
+    pad = 4
+    bov = img.copy()
+    cv2.rectangle(bov, (x1, y1), (x1+tw+pad*2, y1+th+pad*2), col, -1)
+    cv2.addWeighted(bov, 0.80, img, 0.20, 0, img)
+    cv2.putText(img, label, (x1+pad, y1+th+pad),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.42, (255,255,255), 1, cv2.LINE_AA)
+
+
+def draw_all_zones(img, zones, active_zone=None):
+    for z in zones:
+        draw_zone_on_frame(img, z, is_active=(z is active_zone))
+
+
+# ══════════════════════════════════════════════════════
+# ZONE SETUP SCREEN
+# ══════════════════════════════════════════════════════
+#
+# KEY FIX: cv2.WINDOW_AUTOSIZE  — on Windows with DPI
+# scaling, WINDOW_NORMAL causes mouse coords to mismatch
+# image pixels. AUTOSIZE keeps a 1:1 pixel mapping.
+#
+# Layout:  LEFT 640px = camera draw area
+#          RIGHT 220px = options panel
+# ══════════════════════════════════════════════════════
+
+_PNL  = 220          # panel width
+_SW   = FRAME_W + _PNL   # total canvas width  = 860
+_SH   = FRAME_H          # total canvas height = 480
+
+# panel colours
+_C = {
+    "bg":    (14,  14,  20),
+    "line":  (45,  45,  65),
+    "head":  (0,  210, 255),
+    "dim":   (80,  85, 105),
+    "green": (0,  200,  80),
+    "red":   (180, 30,  30),
+}
+
+def run_setup_screen(video_path, existing_zones):
+    """
+    Zone drawing startup screen.
+    - Grab a still frame from the video
+    - User draws bed/sofa zones on it
+    - Side panel shows options & keyboard shortcuts
+    - WINDOW_AUTOSIZE fixes DPI coordinate mismatch on Windows
+    """
+
+    # ── Get background frame ─────────────────────────
+    bg = np.zeros((FRAME_H, FRAME_W, 3), dtype=np.uint8)
+    cap_s = cv2.VideoCapture(video_path)
+    if cap_s.isOpened():
+        for _ in range(5):
+            ret, raw = cap_s.read()
+        if ret:
+            bg = cv2.resize(raw, (FRAME_W, FRAME_H))
+    cap_s.release()
+    bg = (bg * 0.5).astype(np.uint8)   # darken
+
+    # ── Mutable state (dict so closures can write) ────
+    S = {
+        "zones":     list(existing_zones),
+        "ztype":     "bed",
+        "drawing":   False,
+        "p0":        None,   # drag start point
+        "p1":        None,   # drag current point
+        "mouse":     (0, 0),
+        "done":      False,
+        "save":      True,   # True=save&start  False=skip
+    }
+
+    # ── Fixed button rects (canvas coords) ───────────
+    PX  = FRAME_W + 10
+    PW  = _PNL - 18
+    BH  = 34
+
+    BTNS = [
+        # (label,         key,     x,   y,   w,   h)
+        ("BED  zone",   "bed",   PX,  80, PW, BH),
+        ("SOFA zone",   "sofa",  PX, 120, PW, BH),
+        ("Delete last", "del",   PX, 195, PW, BH),
+        ("Clear all",   "clear", PX, 235, PW, BH),
+        ("START  >>>",  "start", PX, 390, PW, BH),
+        ("Skip (no zones)", "skip", PX, 432, PW, BH),
+    ]
+
+    def hit(mx, my):
+        """Return button key under mouse, or None."""
+        for lbl,key,bx,by,bw,bh in BTNS:
+            if bx <= mx <= bx+bw and by <= my <= by+bh:
+                return key
+        return None
+
+    # ── Mouse callback ────────────────────────────────
+    def cb(evt, mx, my, flags, param):
+        S["mouse"] = (mx, my)
+
+        if evt == cv2.EVENT_MOUSEMOVE:
+            if S["drawing"] and S["p0"]:
+                # clamp to camera area
+                S["p1"] = (max(0, min(mx, FRAME_W-1)),
+                           max(0, min(my, FRAME_H-1)))
+
+        elif evt == cv2.EVENT_LBUTTONDOWN:
+            if mx < FRAME_W:          # ── CAMERA AREA ──
+                S["drawing"] = True
+                S["p0"] = (mx, my)
+                S["p1"] = (mx, my)
+            # panel clicks handled on LBUTTONUP
+
+        elif evt == cv2.EVENT_LBUTTONUP:
+            if S["drawing"]:          # ── finish drawing ──
+                S["drawing"] = False
+                if S["p0"] and S["p1"]:
+                    x1 = min(S["p0"][0], S["p1"][0])
+                    y1 = min(S["p0"][1], S["p1"][1])
+                    x2 = max(S["p0"][0], S["p1"][0])
+                    y2 = max(S["p0"][1], S["p1"][1])
+                    if (x2-x1) > 15 and (y2-y1) > 15:
+                        S["zones"].append({"type": S["ztype"],
+                                           "box":  (x1,y1,x2,y2)})
+                        print(f"[SETUP] Zone added: {S['ztype']} "
+                              f"({x1},{y1})-({x2},{y2})")
+                S["p0"] = S["p1"] = None
+
+            elif mx >= FRAME_W:       # ── panel button ──
+                k = hit(mx, my)
+                if k == "bed":
+                    S["ztype"] = "bed"
+                elif k == "sofa":
+                    S["ztype"] = "sofa"
+                elif k == "del":
+                    if S["zones"]: S["zones"].pop()
+                elif k == "clear":
+                    S["zones"].clear()
+                elif k == "start":
+                    S["save"] = True;  S["done"] = True
+                elif k == "skip":
+                    S["save"] = False; S["done"] = True
+
+    # ── Window — AUTOSIZE fixes DPI coord mismatch ───
+    WIN_S = f"LEO Zone Setup — Patient: {PATIENT_NAME}"
+    cv2.namedWindow(WIN_S, cv2.WINDOW_AUTOSIZE)
+    cv2.setMouseCallback(WIN_S, cb)
+
+    # ── Draw loop ─────────────────────────────────────
+    tick = 0
+    while not S["done"]:
+        tick += 1
+        canvas = np.zeros((_SH, _SW, 3), dtype=np.uint8)
+
+        # ── Camera side ──────────────────────────────
+        cam = bg.copy()
+
+        # grid
+        for gx in range(0, FRAME_W, 50):
+            cv2.line(cam, (gx,0),(gx,FRAME_H),(30,30,45),1)
+        for gy in range(0, FRAME_H, 50):
+            cv2.line(cam, (0,gy),(FRAME_W,gy),(30,30,45),1)
+
+        # committed zones
+        draw_all_zones(cam, S["zones"])
+
+        # live drag rectangle
+        if S["drawing"] and S["p0"] and S["p1"]:
+            col = ZONE_COLORS[S["ztype"]]
+            rx1,ry1 = min(S["p0"][0],S["p1"][0]), min(S["p0"][1],S["p1"][1])
+            rx2,ry2 = max(S["p0"][0],S["p1"][0]), max(S["p0"][1],S["p1"][1])
+            ov = cam.copy()
+            cv2.rectangle(ov,(rx1,ry1),(rx2,ry2),col,-1)
+            cv2.addWeighted(ov,0.30,cam,0.70,0,cam)
+            cv2.rectangle(cam,(rx1,ry1),(rx2,ry2),col,2,cv2.LINE_AA)
+            cv2.putText(cam, f"{rx2-rx1}x{ry2-ry1}",
+                        (rx1+4, max(ry1-5,14)),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.38, col, 1)
+
+        # crosshair
+        mx,my = S["mouse"]
+        if mx < FRAME_W and not S["drawing"]:
+            col = ZONE_COLORS[S["ztype"]]
+            cv2.line(cam,(mx-12,my),(mx+12,my),col,1,cv2.LINE_AA)
+            cv2.line(cam,(mx,my-12),(mx,my+12),col,1,cv2.LINE_AA)
+            cv2.circle(cam,(mx,my),4,col,1,cv2.LINE_AA)
+
+        # top instruction bar
+        cv2.rectangle(cam,(0,0),(FRAME_W,28),(10,10,16),-1)
+        inst = f"DRAG to draw   |   Type: {S['ztype'].upper()}   |   Zones: {len(S['zones'])}"
+        cv2.putText(cam, inst, (8,19),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.36, _C["green"], 1)
+
+        canvas[:, :FRAME_W] = cam
+
+        # ── Panel side ───────────────────────────────
+        panel = np.full((_SH, _PNL, 3), _C["bg"], dtype=np.uint8)
+        cv2.line(panel,(1,0),(1,_SH),(60,65,90),2)   # left border
+
+        # header
+        cv2.putText(panel,"LEO  SETUP",(10,28),
+                    cv2.FONT_HERSHEY_SIMPLEX,0.52,_C["head"],1,cv2.LINE_AA)
+        cv2.putText(panel,f"Patient: {PATIENT_NAME}",(10,48),
+                    cv2.FONT_HERSHEY_SIMPLEX,0.32,(100,200,100),1)
+        cv2.line(panel,(6,56),(_PNL-6,56),_C["line"],1)
+
+        cv2.putText(panel,"ZONE TYPE",(10,74),
+                    cv2.FONT_HERSHEY_SIMPLEX,0.30,_C["dim"],1)
+
+        hov = hit(mx, my)
+
+        for lbl,key,bx,by,bw,bh in BTNS:
+            px = bx - FRAME_W   # panel-relative x
+            active  = (key == S["ztype"] and key in ("bed","sofa"))
+            hovered = (hov == key)
+
+            # pick colour
+            if key == "start":
+                bgc = (0,150,55) if not hovered else (0,190,70)
+                bdc = (0,230,100)
+            elif key == "skip":
+                bgc = (30,30,50) if not hovered else (45,45,70)
+                bdc = (70,75,100)
+            elif key in ("del","clear"):
+                bgc = (80,15,15) if not hovered else (110,20,20)
+                bdc = (160,30,30)
+            elif active:
+                bgc = ZONE_COLORS[key]
+                bdc = (220,230,255)
+            else:
+                bgc = (30,32,48) if not hovered else (45,47,68)
+                bdc = (55,60,85)
+
+            cv2.rectangle(panel,(px,by),(px+bw,by+bh),bgc,-1)
+            cv2.rectangle(panel,(px,by),(px+bw,by+bh),bdc,1)
+            if active:
+                cv2.circle(panel,(px+10,by+bh//2),4,(0,255,140),-1)
+            tw,th = cv2.getTextSize(lbl,cv2.FONT_HERSHEY_SIMPLEX,0.37,1)[0]
+            cv2.putText(panel,lbl,(px+(bw-tw)//2, by+(bh+th)//2),
+                        cv2.FONT_HERSHEY_SIMPLEX,0.37,(225,230,255),1,cv2.LINE_AA)
+
+        # separator between zone-type and actions
+        cv2.line(panel,(6,175),(_PNL-6,175),_C["line"],1)
+        cv2.putText(panel,"ACTIONS",(10,190),
+                    cv2.FONT_HERSHEY_SIMPLEX,0.30,_C["dim"],1)
+
+        # zone count
+        zc   = len(S["zones"])
+        zcol = _C["green"] if zc else (80,80,100)
+        cv2.putText(panel,f"Zones saved: {zc}",(10,290),
+                    cv2.FONT_HERSHEY_SIMPLEX,0.36,zcol,1)
+
+        # separator + "when ready"
+        cv2.line(panel,(6,370),(_PNL-6,370),_C["line"],1)
+        cv2.putText(panel,"WHEN READY:",(10,384),
+                    cv2.FONT_HERSHEY_SIMPLEX,0.30,_C["dim"],1)
+
+        # keyboard help at bottom
+        cv2.line(panel,(6,_SH-88),(_PNL-6,_SH-88),_C["line"],1)
+        keys = ["KEYBOARD:","  ENTER/S  Start",
+                "  Q        Skip","  D        Delete last",
+                "  C        Clear all","  TAB      Switch type"]
+        for i,t in enumerate(keys):
+            c = _C["head"] if i==0 else _C["dim"]
+            cv2.putText(panel,t,(8,_SH-72+i*13),
+                        cv2.FONT_HERSHEY_SIMPLEX,0.27,c,1)
+
+        canvas[:, FRAME_W:] = panel
+        cv2.imshow(WIN_S, canvas)
+
+        k = cv2.waitKey(16) & 0xFF
+        if   k in (13, ord('s'), ord('S')):
+            S["save"] = True;  S["done"] = True
+        elif k in (ord('q'), ord('Q')):
+            S["save"] = False; S["done"] = True
+        elif k in (ord('d'), ord('D')):
+            if S["zones"]: S["zones"].pop()
+        elif k in (ord('c'), ord('C')):
+            S["zones"].clear()
+        elif k == 9:   # TAB
+            S["ztype"] = "sofa" if S["ztype"]=="bed" else "bed"
+
+    cv2.destroyWindow(WIN_S)
+    cv2.waitKey(1)
+
+    if S["save"] and S["zones"]:
+        save_zones(S["zones"])
+    print(f"[SETUP] {len(S['zones'])} zone(s) confirmed.")
+    return S["zones"]
+
+
+# ══════════════════════════════════════════════════════
+# DETECTION HELPERS  (same as v17)
+# ══════════════════════════════════════════════════════
+
+def get_aspect_ratio(box):
+    x1,y1,x2,y2 = box
+    return max(y2-y1,1)/max(x2-x1,1)
+
+def get_bbox_area(box):
+    x1,y1,x2,y2 = box
+    return max(x2-x1,0)*max(y2-y1,0)
+
+def compute_flow_energy(gray_curr, gray_prev, box):
+    if gray_prev is None or box is None: return 0.0
+    x1=max(int(box[0]),0); y1=max(int(box[1]),0)
+    x2=min(int(box[2]),gray_curr.shape[1])
+    y2=min(int(box[3]),gray_curr.shape[0])
+    if x2<=x1+4 or y2<=y1+4: return 0.0
+    flow = cv2.calcOpticalFlowFarneback(
+        gray_prev[y1:y2,x1:x2], gray_curr[y1:y2,x1:x2], None,
+        pyr_scale=0.5,levels=2,winsize=12,iterations=2,
+        poly_n=5,poly_sigma=1.1,flags=0)
+    return float(np.mean(np.sqrt(flow[...,0]**2+flow[...,1]**2)))
+
+def select_main_subject(boxes_labels_confs):
+    if not boxes_labels_confs: return "none", None
+    best_label,best_box,best_area,best_conf = "none",None,-1,-1
+    for (label,box,conf) in boxes_labels_confs:
+        area=get_bbox_area(box); ar=get_aspect_ratio(box)
+        if label=="lying" and ar>LYING_ASPECT_RATIO_MAX: continue
+        if area>best_area or (area==best_area and conf>best_conf):
+            best_area,best_conf=area,conf
+            best_label,best_box=label,box
+    return best_label,best_box
+
+safe_zones = []
+
+def analyze_fall_timeline(fmc, ar_hist, pre_posture="none", current_person_box=None):
+    if current_person_box is not None and person_in_safe_zone(current_person_box, safe_zones):
+        return False, 0, "blocked:person_in_safe_zone"
+
+    flow_list=list(flow_history); drop_list=list(drop_history)
+    area_list=list(area_change_history); post_list=list(posture_history)
+    ar_list=list(ar_hist) if ar_hist else []
+    raw_drops=list(raw_drop_history); raw_areas=list(raw_area_history)
+    score=0; notes=[]
+
+    if pre_posture=="sitting":
+        if fmc>=FALL_MODEL_CONSEC: notes.append("sitting_override_by_fallmodel")
+        else: return False,0,"blocked:sitting_to_lying(sofa/bed)"
+
+    upright_count=sum(1 for p in post_list[-UPRIGHT_LOOKBACK:]
+                      if p in ("standing","sitting"))
+    if upright_count<MIN_UPRIGHT_FRAMES:
+        return False,0,f"blocked:no_upright({upright_count}<{MIN_UPRIGHT_FRAMES})"
+
+    has_sudden_drop=any(d>=SUDDEN_DROP_THRESH for d in raw_drops[-PRE_LYING_WINDOW:])
+    has_sudden_area=any(a>=SUDDEN_AREA_THRESH  for a in raw_areas[-PRE_LYING_WINDOW:])
+    if not has_sudden_drop and not has_sudden_area and fmc==0:
+        return False,0,"blocked:gradual_transition(no_spike,no_fallmodel)"
+
+    pre_drops=drop_list[-PRE_LYING_WINDOW:] if drop_list else []
+    max_drop=max(pre_drops) if pre_drops else 0.0
+    if   max_drop>=DROP_FAST_PX: score+=2; notes.append(f"fast_drop={max_drop:.0f}")
+    elif max_drop>=DROP_ANY_PX:  score+=1; notes.append(f"drop={max_drop:.0f}")
+
+    pre_area=area_list[-PRE_LYING_WINDOW:] if area_list else []
+    max_area_chg=max(pre_area) if pre_area else 0.0
+    if   max_area_chg>=AREA_CHANGE_HIGH: score+=2; notes.append(f"area_chg={max_area_chg:.2f}")
+    elif max_area_chg>=AREA_CHANGE_ANY:  score+=1; notes.append(f"area_any={max_area_chg:.2f}")
+
+    n=len(flow_list)
+    pre_flow=flow_list[max(0,n-PRE_LYING_WINDOW-POST_LYING_WINDOW):
+                       max(0,n-POST_LYING_WINDOW)]
+    max_pre_flow=max(pre_flow) if pre_flow else 0.0
+    if   max_pre_flow>=FLOW_SPIKE_THRESH: score+=2; notes.append(f"flow_spike={max_pre_flow:.2f}")
+    elif max_pre_flow>=FLOW_ANY_THRESH:   score+=1; notes.append(f"flow={max_pre_flow:.2f}")
+
+    if len(ar_list)>=4:
+        ar_before=float(np.mean(ar_list[:max(1,len(ar_list)-PRE_LYING_WINDOW)]))
+        ar_after=float(np.mean(ar_list[-3:]))
+        ar_drop=ar_before-ar_after
+        if ar_drop>=ASPECT_DROP_THRESH: score+=2; notes.append(f"aspect_flip={ar_drop:.2f}")
+
+    if fmc>=FALL_MODEL_CONSEC: score+=3; notes.append(f"fall_model={fmc}f")
+
+    if (max_drop<DROP_ANY_PX and max_area_chg<AREA_CHANGE_ANY
+            and max_pre_flow<FLOW_ANY_THRESH):
+        return False,score,(f"blocked:no_motion(d={max_drop:.1f} "
+                            f"a={max_area_chg:.2f} f={max_pre_flow:.2f})")
+
+    post_flow=(flow_list[-POST_LYING_WINDOW:]
+               if len(flow_list)>=POST_LYING_WINDOW else flow_list)
+    still_ratio=sum(1 for f in post_flow if f<FLOW_STILL_THRESH)/max(len(post_flow),1)
+    if still_ratio>=0.35: score+=1; notes.append(f"still={still_ratio:.0%}")
+
+    reason=f"score={score}/{FALL_SCORE_NEEDED} [{' | '.join(notes)}]"
+    if score>=FALL_SCORE_NEEDED: return True,score,f"FALL:{reason}"
+    return False,score,f"safe:{reason}"
+
+
+# ══════════════════════════════════════════════════════
+# DETECTION DISPLAY HELPERS
+# ══════════════════════════════════════════════════════
+
+def draw_banner(frame, state):
+    col=STATE_META.get(state,((100,100,100),"?"))[0]
+    W=frame.shape[1]
+    ov=frame.copy()
+    cv2.rectangle(ov,(0,0),(W,58),col,-1)
+    cv2.addWeighted(ov,0.55,frame,0.45,0,frame)
+    cv2.rectangle(frame,(0,0),(5,58),col,-1)
+    cv2.line(frame,(0,58),(W,58),col,1)
+    cv2.putText(frame,f"STATE:  {state}",
+                (16,40),cv2.FONT_HERSHEY_SIMPLEX,
+                0.95,(255,255,255),2,cv2.LINE_AA)
+
+def draw_signals(frame, flow_val, area_chg, drop_vel, score):
+    H,W=frame.shape[:2]
+    px,py=6,H-90; pw=192
+    ov=frame.copy()
+    cv2.rectangle(ov,(px-2,py-2),(px+pw,py+80),(12,12,18),-1)
+    cv2.addWeighted(ov,0.78,frame,0.22,0,frame)
+    cv2.rectangle(frame,(px-2,py-2),(px+pw,py+80),(50,50,70),1)
+    sigs=[("FLOW",flow_val,5.0,(0,200,255)),
+          ("AREA",area_chg,0.3,(0,180,120)),
+          ("DROP",drop_vel,20.0,(60,100,255)),
+          ("SCOR",score,FALL_SCORE_NEEDED*1.5,(0,60,255))]
+    bx=px+44; bmax=pw-52
+    for i,(lbl,val,mx,col) in enumerate(sigs):
+        y=py+6+i*18
+        bw=int(min(val/max(mx,0.001),1.0)*bmax)
+        cv2.rectangle(frame,(bx,y+2),(bx+bmax,y+12),(28,28,40),-1)
+        if bw>0: cv2.rectangle(frame,(bx,y+2),(bx+bw,y+12),col,-1)
+        cv2.rectangle(frame,(bx,y+2),(bx+bmax,y+12),(55,55,75),1)
+        cv2.putText(frame,lbl,(px,y+12),cv2.FONT_HERSHEY_SIMPLEX,0.30,(140,140,165),1)
+        cv2.putText(frame,f"{val:.1f}",(bx+bmax+3,y+12),
+                    cv2.FONT_HERSHEY_SIMPLEX,0.27,(170,170,195),1)
+
+def draw_rec_indicator(frame, is_saving_clip, tick):
+    """Show REC dot and CLIP indicator."""
+    H,W=frame.shape[:2]
+    # Always-on REC dot
+    pulse = int(180 + 75 * math.sin(tick * 0.2))
+    cv2.circle(frame, (W-20, 20), 7, (0, 0, pulse), -1)
+    cv2.putText(frame, "REC", (W-45, 25),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.38, (0, 0, 200), 1)
+    # CLIP badge when saving fall clip
+    if is_saving_clip:
+        badge = "  SAVING FALL CLIP  "
+        (bw,bh),_ = cv2.getTextSize(badge, cv2.FONT_HERSHEY_SIMPLEX, 0.44, 1)
+        bx = W - bw - 60
+        cv2.rectangle(frame, (bx-4, 30), (bx+bw+4, 30+bh+8), (0,0,180), -1)
+        cv2.putText(frame, badge, (bx, 30+bh+2),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.44, (255,255,255), 1, cv2.LINE_AA)
+
+
+# ══════════════════════════════════════════════════════
+# STARTUP
+# ══════════════════════════════════════════════════════
+print(f"\n[INFO] Loading saved zones for patient '{PATIENT_NAME}'...")
+safe_zones = load_zones()
+
+print("[INFO] Opening zone setup screen...")
+safe_zones = run_setup_screen(VIDEO_PATH, safe_zones)
+print(f"[INFO] {len(safe_zones)} zone(s) confirmed. Starting detection...\n")
+
+# ── Start video session ───────────────────────────────
+video_session = VideoSession(
+    patient_name    = PATIENT_NAME,
+    fps             = 20.0,
+    frame_size      = (FRAME_W, FRAME_H),
+    save_continuous = True,
+)
+video_session.start()
+
+# ══════════════════════════════════════════════════════
+# STATE VARIABLES
+# ══════════════════════════════════════════════════════
+posture_history      = deque(maxlen=UPRIGHT_LOOKBACK+PRE_LYING_WINDOW+10)
+flow_history         = deque(maxlen=PRE_LYING_WINDOW+POST_LYING_WINDOW+10)
+drop_history         = deque(maxlen=PRE_LYING_WINDOW+10)
+area_change_history  = deque(maxlen=PRE_LYING_WINDOW+10)
+aspect_ratio_history = deque(maxlen=PRE_LYING_WINDOW+10)
+raw_drop_history     = deque(maxlen=PRE_LYING_WINDOW+10)
+raw_area_history     = deque(maxlen=PRE_LYING_WINDOW+10)
+
+prev_gray=prev_center_y=prev_bbox_area=prev_aspect_ratio=None
+lying_consec=standing_consec=fall_model_consec=0
+frames_since_lying=0; episode_analyzed=False
+last_valid_posture="none"; posture_persist_counter=0
+fall_latch_ctr=recovery_latch_ctr=0
+final_state="STARTING"; fall_reason=""
+post_fall_lying=False; pre_lying_posture="none"
+episode_locked=False; last_upright_posture="none"
+sitting_consec_pre=0; safe_lying_locked=False
+last_known_posture="none"
+
+frame_count=0
+
+# ══════════════════════════════════════════════════════
+# MAIN DETECTION LOOP
+# ══════════════════════════════════════════════════════
+cap = cv2.VideoCapture(VIDEO_PATH)
+WIN = f"FYP Fall Detection v18 — {PATIENT_NAME}"
+cv2.namedWindow(WIN, cv2.WINDOW_NORMAL)
+
+# No runtime drawing — zones are set on startup screen only
+def rt_mouse_cb(event, x, y, flags, param):
+    pass
+
+cv2.setMouseCallback(WIN, rt_mouse_cb)
+
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        print("[INFO] Video ended.")
+        break
+
+    frame_count += 1
+    frame = cv2.resize(frame, (FRAME_W, FRAME_H))
+    gray_curr = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    # ── Feed frame to video session (continuous + clip buffer) ──
+    video_session.feed(frame)
+
+    # FALL MODEL
+    fall_detected=False
+    for r in fall_model(frame,conf=0.5,verbose=False):
+        for box in r.boxes:
+            cls=int(box.cls[0]); label=fall_model.names[cls]
+            conf=float(box.conf[0]); x1,y1,x2,y2=map(int,box.xyxy[0])
+            if label.lower()=="fall": fall_detected=True
+            cv2.rectangle(frame,(x1,y1),(x2,y2),(0,0,180),2)
+            cv2.putText(frame,f"{label} {conf:.2f}",(x1,max(y1-8,70)),
+                        cv2.FONT_HERSHEY_SIMPLEX,0.42,(0,0,180),1)
+    fall_model_consec=fall_model_consec+1 if fall_detected else 0
+
+    # POSTURE MODEL
+    all_detections=[]
+    for r in posture_model(frame,conf=0.45,verbose=False):
+        for box in r.boxes:
+            conf=float(box.conf[0]); cls=int(box.cls[0])
+            label=posture_model.names[cls].lower()
+            x1,y1,x2,y2=map(int,box.xyxy[0])
+            all_detections.append((label,(x1,y1,x2,y2),conf))
+            ar=get_aspect_ratio((x1,y1,x2,y2))
+            reject=(label=="lying" and ar>LYING_ASPECT_RATIO_MAX)
+            color=(120,120,120) if reject else (0,180,0)
+            cv2.rectangle(frame,(x1,y1),(x2,y2),color,2)
+            cv2.putText(frame,f"{label}{'[X]' if reject else ''} {conf:.2f}",
+                        (x1,max(y1-26,70)),cv2.FONT_HERSHEY_SIMPLEX,0.38,
+                        (100,100,100) if reject else (0,180,0),1)
+
+    raw_posture_label,person_box=select_main_subject(all_detections)
+    active_zone=person_zone(person_box,safe_zones)
+    on_safe_zone=active_zone is not None
+
+    if raw_posture_label!="none":
+        last_valid_posture=raw_posture_label
+        posture_persist_counter=0; posture_label=raw_posture_label
+    else:
+        posture_persist_counter+=1
+        posture_label=(last_valid_posture
+                       if posture_persist_counter<=POSTURE_PERSIST_FRAMES
+                       else "none")
+    if posture_label!="none": last_known_posture=posture_label
+
+    flow_energy=compute_flow_energy(gray_curr,prev_gray,person_box)
+    flow_history.append(flow_energy)
+    prev_gray=gray_curr.copy()
+
+    drop_velocity=0.0; area_change=0.0
+    curr_ar=prev_aspect_ratio if prev_aspect_ratio else 1.5
+    if person_box is not None:
+        x1,y1,x2,y2=person_box
+        cy=(y1+y2)/2.0; curr_ar=get_aspect_ratio(person_box)
+        curr_area=get_bbox_area(person_box)
+        if prev_center_y is not None: drop_velocity=cy-prev_center_y
+        if prev_bbox_area and prev_bbox_area>0:
+            area_change=abs(curr_area-prev_bbox_area)/prev_bbox_area
+        prev_center_y=cy; prev_bbox_area=curr_area; prev_aspect_ratio=curr_ar
+
+    drop_history.append(max(drop_velocity,0.0))
+    area_change_history.append(area_change)
+    aspect_ratio_history.append(curr_ar)
+    raw_drop_history.append(max(drop_velocity,0.0))
+    raw_area_history.append(area_change)
+
+    if fall_latch_ctr==0: posture_history.append(posture_label)
+
+    if lying_consec<LYING_CONFIRM_FRAMES:
+        if posture_label=="standing":
+            last_upright_posture="standing"; sitting_consec_pre=0
+        elif posture_label=="sitting":
+            sitting_consec_pre+=1
+            if sitting_consec_pre>=SITTING_CONFIRM_FOR_PREPOSTURE:
+                last_upright_posture="sitting"
+        else: sitting_consec_pre=0
+
+    if posture_label=="lying":
+        lying_consec+=1; standing_consec=0
+        if lying_consec==LYING_CONFIRM_FRAMES and not episode_locked:
+            pre_lying_posture=last_upright_posture; episode_locked=True
+        if on_safe_zone and lying_consec>=LYING_CONFIRM_FRAMES and not safe_lying_locked:
+            safe_lying_locked=True
+            fall_reason=f"blocked:person_on_{active_zone['type']}(safe_zone)"
+    elif posture_label in ("standing","sitting"):
+        standing_consec+=1
+        if standing_consec>=STANDING_CONFIRM_FRAMES:
+            lying_consec=0; frames_since_lying=0; episode_analyzed=False
+            fall_reason=""; post_fall_lying=False; episode_locked=False
+            pre_lying_posture="none"; sitting_consec_pre=0; safe_lying_locked=False
+    else: standing_consec=0
+
+    if lying_consec>=LYING_CONFIRM_FRAMES:
+        frames_since_lying+=1
+    else:
+        if frames_since_lying>0:
+            post_fall_lying=False; episode_analyzed=False; episode_locked=False
+            pre_lying_posture="none"; sitting_consec_pre=0; safe_lying_locked=False
+        frames_since_lying=0
+
+    current_score=0
+    in_analysis_window=ANALYSIS_START<=frames_since_lying<=ANALYSIS_END
+
+    if (in_analysis_window and not episode_analyzed
+            and not safe_lying_locked and fall_latch_ctr==0):
+        is_fall,current_score,fall_reason=analyze_fall_timeline(
+            fall_model_consec,aspect_ratio_history,
+            pre_posture=pre_lying_posture,current_person_box=person_box)
+        if is_fall:
+            fall_latch_ctr=FALL_LATCH_FRAMES; episode_analyzed=True; post_fall_lying=True
+            # ── SAVE FALL CLIP ──────────────────────────────
+            clip_path = video_session.on_fall()
+            print(f"[FALL] 🎥 Clip saving → {clip_path}")
+        else: safe_lying_locked=True
+
+    if (fall_detected and fall_model_consec>=FALL_MODEL_CONSEC
+            and lying_consec>=LYING_CONFIRM_FRAMES
+            and not safe_lying_locked and fall_latch_ctr==0
+            and not episode_analyzed):
+        is_fall,current_score,fall_reason=analyze_fall_timeline(
+            fall_model_consec,aspect_ratio_history,
+            pre_posture=pre_lying_posture,current_person_box=person_box)
+        if is_fall:
+            fall_latch_ctr=FALL_LATCH_FRAMES; episode_analyzed=True; post_fall_lying=True
+            clip_path = video_session.on_fall()
+            print(f"[FALL] 🎥 Clip saving → {clip_path}")
+        else: safe_lying_locked=True
+
+    if (posture_label=="none" and fall_model_consec>=FALL_MODEL_CONSEC
+            and not safe_lying_locked and fall_latch_ctr==0
+            and not episode_analyzed
+            and last_known_posture in ("standing","sitting")
+            and not person_in_safe_zone(person_box,safe_zones)):
+        is_fall,current_score,fall_reason=analyze_fall_timeline(
+            fall_model_consec,aspect_ratio_history,
+            pre_posture=last_known_posture,current_person_box=person_box)
+        if is_fall:
+            fall_latch_ctr=FALL_LATCH_FRAMES; episode_analyzed=True; post_fall_lying=True
+            fall_reason=f"[FM-UNKNOWN] {fall_reason}"
+            clip_path = video_session.on_fall()
+            print(f"[FALL] 🎥 Clip saving → {clip_path}")
+
+    if fall_latch_ctr>0 and on_safe_zone:
+        fall_latch_ctr=0; recovery_latch_ctr=0
+        post_fall_lying=False; safe_lying_locked=True
+        fall_reason="blocked:entered_safe_zone_during_latch"
+        print("[BLOCK-B] Latch cancelled — person in safe zone")
+
+    if fall_latch_ctr>0:
+        fall_latch_ctr-=1; final_state="FALL"
+        if fall_latch_ctr==0: recovery_latch_ctr=RECOVERY_LATCH_FRAMES
+    elif recovery_latch_ctr>0:
+        recovery_latch_ctr-=1; final_state="RECOVERY"
+    else:
+        if posture_label=="lying":
+            if post_fall_lying: final_state="LYING (POST-FALL)"
+            elif on_safe_zone:  final_state=f"LYING (ON {active_zone['type'].upper()})"
+            else:               final_state="LYING (SAFE)"
+        elif posture_label=="standing": final_state="STANDING"
+        elif posture_label=="sitting":  final_state="SITTING"
+        else:                           final_state="UNKNOWN"
+
+    # Draw committed zones on frame
+    draw_all_zones(frame,safe_zones,active_zone)
+
+    draw_banner(frame,final_state)
+    draw_signals(frame,flow_energy,area_change,max(drop_velocity,0),current_score)
+    draw_rec_indicator(frame, video_session.clipper.is_saving, frame_count)
+
+    H,W=frame.shape[:2]
+    if on_safe_zone:
+        col=ZONE_COLORS[active_zone["type"]]
+        draw_pill_label(frame,f"ON {active_zone['type'].upper()}",W-108,88,col,scale=0.40)
+    if safe_lying_locked:
+        draw_pill_label(frame,"SAFE-LOCK",W-100,112,(30,130,60),scale=0.35)
+
+    selected_ar=get_aspect_ratio(person_box) if person_box else 0.0
+    dbg=(f"p:{posture_label}  ar:{selected_ar:.2f}  ly:{lying_consec}  "
+         f"fs:{frames_since_lying}  drop:{drop_velocity:.1f}  "
+         f"area:{area_change:.2f}  flow:{flow_energy:.2f}  "
+         f"fm:{fall_model_consec}  latch:{fall_latch_ctr}  "
+         f"zone:{active_zone['type'] if active_zone else 'none'}  "
+         f"sl:{safe_lying_locked}  pre:{pre_lying_posture}")
+    cv2.putText(frame,dbg,(6,H-6),cv2.FONT_HERSHEY_SIMPLEX,0.27,(130,130,155),1)
+    if fall_reason:
+        cv2.putText(frame,fall_reason,(6,H-18),
+                    cv2.FONT_HERSHEY_SIMPLEX,0.28,(55,195,255),1)
+
+    cv2.imshow(WIN,frame)
+    key=cv2.waitKey(1)&0xFF
+
+    if key==ord('q'): break
+    elif key==ord('c'):
+        # Press C during video to re-open the zone setup screen
+        print("[INFO] Re-opening zone setup screen...")
+        cap.release()
+        cv2.destroyAllWindows()
+        safe_zones = run_setup_screen(VIDEO_PATH, safe_zones)
+        cap = cv2.VideoCapture(VIDEO_PATH)
+        cv2.namedWindow(WIN, cv2.WINDOW_NORMAL)
+        cv2.setMouseCallback(WIN, rt_mouse_cb)
+        print("[INFO] Resuming detection...")
+
+cap.release()
+cv2.destroyAllWindows()
+
+# ── End video session ────────────────────────────────
+video_session.stop()
+print("[INFO] Done.")

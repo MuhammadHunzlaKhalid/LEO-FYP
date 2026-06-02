@@ -1,0 +1,25 @@
+{
+    "personal": {
+        "name": "hasseb",
+        "age": 65
+    },
+    "emergency_contacts": [
+        {
+            "name": "hunzla",
+            "relation": "son",
+            "phone": "03106646486"
+        },
+        {
+            "name": "Ayesha",
+            "relation": "son",
+            "phone": "03106646486"
+        }
+    ],
+    "contacts": [],
+    "medications": [],
+    "routine": {
+        "wake_up": "5:00",
+        "sleep": "9:00"
+    },
+    "active_zones": []
+}

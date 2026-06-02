@@ -1,0 +1,206 @@
+[
+  {
+    "time": "02:16:03",
+    "category": "chat",
+    "content": "User: hi | Leo: Good morning, Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "02:16:08",
+    "category": "chat",
+    "content": "User: how are you | Leo: Good morning, Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "02:17:17",
+    "category": "chat",
+    "content": "User: what are you doing? | Leo: I'm here to assist with anything you need. Right now, I'm ready to help with your routine tasks or answer any questions you have. What would you like to do?",
+    "severity": "info"
+  },
+  {
+    "time": "02:17:33",
+    "category": "medication",
+    "content": "tell me about my medicine",
+    "severity": "info"
+  },
+  {
+    "time": "02:17:33",
+    "category": "chat",
+    "content": "User: tell me about my medicine | Leo: Your medication schedule: panadol at 7:00.",
+    "severity": "info"
+  },
+  {
+    "time": "02:18:20",
+    "category": "chat",
+    "content": "User: thanks | Leo: You're welcome, Ali! If you need anything else, just let me know.",
+    "severity": "info"
+  },
+  {
+    "time": "02:18:32",
+    "category": "chat",
+    "content": "User: call Shaiq | Leo: Calling your son, Shaiq (03106646486) now...",
+    "severity": "info"
+  },
+  {
+    "time": "02:38:57",
+    "category": "chat",
+    "content": "User: Hello how are you? | Leo: Good morning, Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "02:54:59",
+    "category": "chat",
+    "content": "User: Hi how are you? | Leo: Good morning, Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "02:56:03",
+    "category": "chat",
+    "content": "User: quando x | Leo: Ol\u00e1, Ali! Como voc\u00ea est\u00e1 se sentindo hoje?",
+    "severity": "info"
+  },
+  {
+    "time": "03:11:05",
+    "category": "chat",
+    "content": "User: doing what about you | Leo: As an AI, I don't experience physical activities like humans do. However, I am here to assist you with any needs you might have. Is there something specific you need help with?",
+    "severity": "info"
+  },
+  {
+    "time": "03:17:46",
+    "category": "chat",
+    "content": "User: Well tell me about some story to motivate me. | Leo: Sure, here\u2019s a motivational story that may inspire you:\n\nOnce upon a time, there was a young man who had lost his sight due to illness. Despite this setback, he didn\u2019t lose hope. He decided to continue living life to the fullest, even if it meant using his other senses differently.\n\nHe started painting pictures with his fingers on walls, doors, and windows. People noticed him and began asking for his portraits. The artist found ways to communicate through touch alone and soon became known as",
+    "severity": "info"
+  },
+  {
+    "time": "03:31:37",
+    "category": "chat",
+    "content": "User: tell me story | Leo: Certainly! Here is another inspiring story:\n\nIn ancient Greece, there lived a philosopher named Socrates. His reputation as a wise teacher spread far and wide. Many students from nearby cities came to study with him.\n\nOne day, when Socrates went out of town for several weeks, a group of friends invited him to stay with them during his absence. When he returned after his trip, they welcomed him back enthusiastically. But then, one friend secretly said to another, \"Socrates taught us so much",
+    "severity": "info"
+  },
+  {
+    "time": "16:38:31",
+    "category": "chat",
+    "content": "User: call hunzla | Leo: Who would you like to call? I have: Abdulallah, Shaiq, Ayesha.",
+    "severity": "info"
+  },
+  {
+    "time": "16:39:54",
+    "category": "chat",
+    "content": "User: Ayesha | Leo: Calling Ayesha now...",
+    "severity": "info"
+  },
+  {
+    "time": "16:41:05",
+    "category": "medication",
+    "content": "what are my medicines",
+    "severity": "info"
+  },
+  {
+    "time": "16:41:05",
+    "category": "chat",
+    "content": "User: what are my medicines | Leo: Your medication schedule: panadol at 7:00.",
+    "severity": "info"
+  },
+  {
+    "time": "16:41:09",
+    "category": "chat",
+    "content": "User: show emergency contacts | Leo: Emergency contacts:\n  * Shaiq (son) -- 03106646486\n  * Ayesha (daughter) -- 03106646486",
+    "severity": "info"
+  },
+  {
+    "time": "17:26:06",
+    "category": "medication",
+    "content": "what are my medicines",
+    "severity": "info"
+  },
+  {
+    "time": "17:26:06",
+    "category": "chat",
+    "content": "User: what are my medicines | Leo: Your medication schedule: panadol at 7:00.",
+    "severity": "info"
+  },
+  {
+    "time": "17:26:09",
+    "category": "chat",
+    "content": "User: show emergency contacts | Leo: Emergency contacts:\n  * Shaiq (son) -- 03106646486\n  * Ayesha (daughter) -- 03106646486",
+    "severity": "info"
+  },
+  {
+    "time": "17:26:13",
+    "category": "emotion",
+    "content": "tired: I feel tired",
+    "severity": "warning"
+  },
+  {
+    "time": "17:26:13",
+    "category": "chat",
+    "content": "User: I feel tired | Leo: You sound tired, Ali. Rest is very important. Can I get you a reminder to take a nap, or would you like some water?",
+    "severity": "info"
+  },
+  {
+    "time": "17:51:18",
+    "category": "chat",
+    "content": "User: hi | Leo: Good afternoon, Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "18:21:19",
+    "category": "chat",
+    "content": "User: Hi, how are you? | Leo: Good evening, Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "18:22:15",
+    "category": "chat",
+    "content": "User: hi | Leo: Good evening, Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "19:08:56",
+    "category": "chat",
+    "content": "User: hi | Leo: Good evening, Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "19:09:03",
+    "category": "chat",
+    "content": "User: call Shaiq | Leo: Calling your son, Shaiq (03106646486) now...",
+    "severity": "info"
+  },
+  {
+    "time": "19:09:10",
+    "category": "medication",
+    "content": "what are my medicines",
+    "severity": "info"
+  },
+  {
+    "time": "19:09:10",
+    "category": "chat",
+    "content": "User: what are my medicines | Leo: Your medication schedule: panadol at 7:00.",
+    "severity": "info"
+  },
+  {
+    "time": "19:09:21",
+    "category": "emotion",
+    "content": "tired: I feel tired",
+    "severity": "warning"
+  },
+  {
+    "time": "19:09:21",
+    "category": "chat",
+    "content": "User: I feel tired | Leo: You sound tired, Ali. Rest is very important. Can I get you a reminder to take a nap, or would you like some water?",
+    "severity": "info"
+  },
+  {
+    "time": "21:23:08",
+    "category": "chat",
+    "content": "User: tell me story | Leo: Of course! Here's a story for you:\n\nOnce upon a time, in a small village nestled among rolling hills, there lived a young woman named Lila. Lila was known throughout the village for her kindness and compassion. Every year, she would gather food and supplies to share with those in need. One winter, a severe storm hit, causing many animals to seek shelter in Lila's home. \n\nMoved by their plight, Lila quickly gathered blankets and warm clothes, along with extra",
+    "severity": "info"
+  },
+  {
+    "time": "21:28:11",
+    "category": "chat",
+    "content": "User: tell me story | Leo: Of course! Here's a story for you:\n\nOnce upon a time, in a small village nestled among rolling hills, there lived a young woman named Lila. Lila was known throughout the village for her kindness and compassion. Every year, she would gather food and supplies to share with those in need. One winter, a severe storm hit, causing many animals to seek shelter in Lila's home.\n\nMoved by their plight, Lila quickly gathered blankets and warm clothes, along with extra provisions",
+    "severity": "info"
+  }
+]

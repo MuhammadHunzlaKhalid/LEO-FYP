@@ -1,0 +1,134 @@
+[
+  {
+    "time": "00:57:53",
+    "category": "chat",
+    "content": "User: hi | Leo: Good morning, Muhammad Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "00:58:16",
+    "category": "chat",
+    "content": "User: tell me story | Leo: Sure, I can tell you a story. What would you like to hear?",
+    "severity": "info"
+  },
+  {
+    "time": "00:59:00",
+    "category": "chat",
+    "content": "User: tale of naruto uzmaki | Leo: Oh, Naruto Uzumaki is a character from the anime series Naruto. He's known for his bravery and determination. In this tale, he's facing a challenge that will test how strong he is. Would you like to know more about his journey?",
+    "severity": "info"
+  },
+  {
+    "time": "00:59:52",
+    "category": "chat",
+    "content": "User: good | Leo: That's great to hear! Let me know if you have any other questions.",
+    "severity": "info"
+  },
+  {
+    "category": "emergency",
+    "severity": "critical",
+    "message": "SOS triggered from contact page",
+    "timestamp": "2026-05-18T07:16:11.667209"
+  },
+  {
+    "time": "07:16:47",
+    "category": "chat",
+    "content": "User: How am I feeling today? | Leo: Leo's brain is still loading. Please wait a moment.",
+    "severity": "info"
+  },
+  {
+    "time": "07:17:31",
+    "category": "chat",
+    "content": "User: hi | Leo: Good morning, Muhammad Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "08:05:39",
+    "category": "chat",
+    "content": "User: How many falls this week? | Leo: Good morning, Muhammad Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "08:06:25",
+    "category": "chat",
+    "content": "User: good how are you | Leo: I'm fine, thank you! How about you?",
+    "severity": "info"
+  },
+  {
+    "time": "09:28:35",
+    "category": "chat",
+    "content": "User: call Ayesha | Leo: Who to call? I have: none.",
+    "severity": "info"
+  },
+  {
+    "time": "09:28:50",
+    "category": "chat",
+    "content": "User: Ayesha | Leo: Ayesha! How may I assist you?",
+    "severity": "info"
+  },
+  {
+    "time": "09:29:03",
+    "category": "chat",
+    "content": "User: Daily summary | Leo: Hello Muhammad Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "09:29:19",
+    "category": "chat",
+    "content": "User: hi | Leo: Good morning, Muhammad Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "09:29:24",
+    "category": "chat",
+    "content": "User: What medications are due? | Leo: I don't have any medication schedule saved for you. Please ask your caregiver to set one up.",
+    "severity": "info"
+  },
+  {
+    "time": "09:48:33",
+    "category": "chat",
+    "content": "User: hi | Leo: Good morning, Muhammad Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "09:48:48",
+    "category": "chat",
+    "content": "User: What is the patient's condition? | Leo: I'm sorry, but I cannot provide information on the patient's condition without knowing their full name and age. Can you please provide me with some details?",
+    "severity": "info"
+  },
+  {
+    "time": "09:49:19",
+    "category": "chat",
+    "content": "User: yes Muhammad Ali age 65 | Leo: Ah, okay then. Do you need to check on anything specific or just get a brief update?",
+    "severity": "info"
+  },
+  {
+    "category": "emergency",
+    "severity": "critical",
+    "message": "SOS from contacts page",
+    "timestamp": "2026-05-18T10:00:36.268217"
+  },
+  {
+    "time": "12:15:13",
+    "category": "chat",
+    "content": "User: hi | Leo: Good afternoon, Muhammad Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "12:19:33",
+    "category": "chat",
+    "content": "User: hi how are you | Leo: I'm doing well, thanks for asking. How was your day?",
+    "severity": "info"
+  },
+  {
+    "time": "16:37:52",
+    "category": "chat",
+    "content": "User: hi | Leo: Good afternoon, Muhammad Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "16:37:59",
+    "category": "chat",
+    "content": "User: call shaiq | Leo: Calling shaiq (03106646486) now...",
+    "severity": "info"
+  }
+]

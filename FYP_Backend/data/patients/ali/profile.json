@@ -1,0 +1,40 @@
+{
+  "personal": {
+    "name": "Muhammad Ali",
+    "age": 65,
+    "phone": "03106646486"
+  },
+  "emergency_contacts": [
+    {
+      "name": "shaiq",
+      "phone": "03106646486",
+      "relation": "son"
+    },
+    {
+      "name": "Ayesha",
+      "phone": "03106646486",
+      "relation": "daughter"
+    }
+  ],
+  "contacts": [],
+  "medications": [
+    {
+      "medicine": "Panadol",
+      "dose": "1",
+      "time": "08:00",
+      "doctor": "Dr Zia",
+      "before_after_food": "after",
+      "quantity_left": 30
+    }
+  ],
+  "routine": {
+    "wake_up": "5:00",
+    "sleep": "22:00",
+    "wake": "07:00"
+  },
+  "active_zones": [
+    "Living Room",
+    "Bedroom",
+    "Kitchen"
+  ]
+}

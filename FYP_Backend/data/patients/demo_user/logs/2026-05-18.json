@@ -1,0 +1,14 @@
+[
+  {
+    "time": "07:48:57",
+    "category": "chat",
+    "content": "User: hi | Leo: Good morning, User! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "07:56:07",
+    "category": "chat",
+    "content": "User: hi | Leo: Good morning, User! How are you feeling today?",
+    "severity": "info"
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "time": "06:05:53",
+    "category": "chat",
+    "content": "User: hi | Leo: Good morning, Muhammad Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "06:09:57",
+    "category": "chat",
+    "content": "User: tell me about my medicin | Leo: Hello Muhammad Ali, I'm just here to assist you with some information. Do you have any specific questions about your medication that I can help you with?",
+    "severity": "info"
+  }
+]

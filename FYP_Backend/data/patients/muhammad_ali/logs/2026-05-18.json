@@ -1,0 +1,212 @@
+[
+  {
+    "time": "00:50:38",
+    "category": "chat",
+    "content": "User: hi | Leo: Good morning, Muhammad! How can I assist you today?",
+    "severity": "info"
+  },
+  {
+    "time": "16:50:59",
+    "category": "chat",
+    "content": "User: hey | Leo: Morning Muhammad! How may I assist you today?",
+    "severity": "info"
+  },
+  {
+    "time": "16:51:30",
+    "category": "chat",
+    "content": "User: Yeah, we'll see. | Leo: I'm just here to listen. Is there anything specific you'd like to talk about?",
+    "severity": "info"
+  },
+  {
+    "time": "16:52:34",
+    "category": "chat",
+    "content": "User: equipment can do the check and | Leo: Hey there, let's focus on something fun instead of checking the equipment! What would you like to know?",
+    "severity": "info"
+  },
+  {
+    "time": "16:52:44",
+    "category": "chat",
+    "content": "User: call shaiq | Leo: Calling your son, shaiq (03106646486) now...",
+    "severity": "info"
+  },
+  {
+    "time": "16:53:11",
+    "category": "chat",
+    "content": "User: Thank you. Thank you. | Leo: You're welcome, Muhammad! Don't hesitate to reach out anytime. Have a great day!",
+    "severity": "info"
+  },
+  {
+    "time": "16:54:32",
+    "category": "chat",
+    "content": "User: And I, that is... | Leo: Ah, what a lovely greeting! Let me think of something more interesting. What brings you here today?",
+    "severity": "info"
+  },
+  {
+    "time": "16:54:57",
+    "category": "reminder",
+    "content": "All the tactics are going to be done. Now, this alert is going to be done. And all the things are going to be done. But, I have to use all the dependencies. So, this is a fast sending through.",
+    "severity": "info"
+  },
+  {
+    "time": "16:55:31",
+    "category": "chat",
+    "content": "User: All the tactics are going to be done. Now, this alert is going to be done. And all the things are going to be done. But, I have to use all the dependencies. So, this is a fast sending through. | Leo: Thank you for sharing that information, Muhammad. The alerts will definitely be sent quickly. It seems you've taken care of everything with precision. This alert notification is quite informative and clear. Keep in touch often and let me know if you need anything else. Have a wonderful day!",
+    "severity": "info"
+  },
+  {
+    "time": "16:56:17",
+    "category": "chat",
+    "content": "User: We can enable you to enter your message. | Leo: Understood, Muhammad. I will be ready to accept messages at any time. How can I assist you further?",
+    "severity": "info"
+  },
+  {
+    "time": "16:56:45",
+    "category": "emotion",
+    "content": "tired: I feel tired",
+    "severity": "warning"
+  },
+  {
+    "time": "16:56:45",
+    "category": "chat",
+    "content": "User: I feel tired | Leo: You sound tired, Muhammad Ali. Rest is very important. Can I get you a reminder to take a nap, or would you like some water?",
+    "severity": "info"
+  },
+  {
+    "time": "16:56:49",
+    "category": "chat",
+    "content": "User: So let's see... | Leo: Okay, let's move forward. Please provide details so I can proceed.",
+    "severity": "info"
+  },
+  {
+    "time": "19:30:44",
+    "category": "chat",
+    "content": "User: I'm not going to be able to do it. I'm not going to be able to do it. I'm not going to be able to do it. | Leo: I understand, Muhammad. The process might require some effort from both of us. Perhaps you could try to relax or meditate during this time?",
+    "severity": "info"
+  },
+  {
+    "time": "19:49:49",
+    "category": "chat",
+    "content": "User: on me. | Leo: Got it. I'll make sure to include some calming techniques when I send messages. Please share the message if you're still interested.",
+    "severity": "info"
+  },
+  {
+    "time": "19:52:13",
+    "category": "chat",
+    "content": "User: yes maybe they can see it eventually yes | Leo: Understood, Muhammad. I'll keep it in mind as we work on the next steps. Stay safe and healthy!",
+    "severity": "info"
+  },
+  {
+    "time": "20:28:27",
+    "category": "chat",
+    "content": "User: I was so happy to be here yesterday. And I was so happy to be here. I was so happy to be here. | Leo: That's fantastic, Muhammad! Being here has been incredibly satisfying. Your happiness shows how much you value this moment. Let's continue the conversation, please.",
+    "severity": "info"
+  },
+  {
+    "time": "20:28:47",
+    "category": "chat",
+    "content": "User: This is the next question. | Leo: Sure thing, Muhammad. Feel free to ask whatever you want to know.",
+    "severity": "info"
+  },
+  {
+    "time": "20:29:01",
+    "category": "chat",
+    "content": "User: slide. It's too much. | Leo: Understood, Muhammad. Let's tackle this slowly. We'll start with the basics. Do you have any questions or topics you'd like to discuss?",
+    "severity": "info"
+  },
+  {
+    "time": "20:29:22",
+    "category": "chat",
+    "content": "User: Whoever- | Leo: Hello, Muhammad Ali! I'm Leo, a friendly AI assistant. What can I help you with today?",
+    "severity": "info"
+  },
+  {
+    "time": "20:38:46",
+    "category": "chat",
+    "content": "User: I will do it like this. I will do it like this. | Leo: Of course, Muhammad! Let's get started with your questions. Please share them, and we'll go from there.",
+    "severity": "info"
+  },
+  {
+    "time": "20:39:27",
+    "category": "chat",
+    "content": "User: is | Leo: I am Leo, your AI friend, always ready to assist you. Let's start with the most basic questions and then build up to more complex ones.",
+    "severity": "info"
+  },
+  {
+    "time": "20:40:26",
+    "category": "chat",
+    "content": "User: to | Leo: Alright, let's begin. What brings you here today?",
+    "severity": "info"
+  },
+  {
+    "time": "20:42:28",
+    "category": "medication",
+    "content": "in it's real , so, I'll speak in a bit first. Rajan has a patient in this area so medicine is and so on. Again, what I've given going on with the child!",
+    "severity": "info"
+  },
+  {
+    "time": "20:42:28",
+    "category": "chat",
+    "content": "User: in it's real , so, I'll speak in a bit first. Rajan has a patient in this area so medicine is and so on. Again, what I've given going on with the child! | Leo: I don't have any medication schedule saved for you. Please ask your caregiver to set one up.",
+    "severity": "info"
+  },
+  {
+    "time": "20:47:05",
+    "category": "chat",
+    "content": "User: for us. of | Leo: Got it, Muhammad. For the child, we recommend starting with a routine dose, followed by a maintenance dose over a few weeks. Then, gradually increase to the recommended dosage until your child is no longer taking medication. If you have any concerns, it's best to consult with a healthcare provider before making significant changes to your child's treatment plan.",
+    "severity": "info"
+  },
+  {
+    "time": "20:56:07",
+    "category": "chat",
+    "content": "User: All Greek military history for New World War is \u042d\u0442\u043e von Japan | Leo: You seem to be referring to Japanese-American relations or historical events involving Japan in the United States. While I cannot provide specific details without access to more recent sources, I can offer some general insights into these topics:\n\n1. **Japanese-American Relations**: This period saw increased tension between the United States and Japan due to historical grievances and ongoing tensions between the two nations. Key points include the internment of Japanese Americans during World War II and the aftermath of the 9/11 attacks in the United States",
+    "severity": "info"
+  },
+  {
+    "time": "20:59:39",
+    "category": "chat",
+    "content": "User: There is this struggle on the holiday. You can barely do a night snack. OK. | Leo: Understood, Muhammad. The holiday season can sometimes be challenging, especially when dealing with daily responsibilities such as food preparation. However, remember that with patience and planning, many challenges can be overcome. Let's focus on other areas where we can enhance our well-being and ensure everyone is treated fairly.",
+    "severity": "info"
+  },
+  {
+    "time": "21:01:23",
+    "category": "chat",
+    "content": "User: I'll be back. | Leo: Absolutely, Muhammad. Remember to stay positive and proactive. If you need anything or need to talk, just reach out. Take care!",
+    "severity": "info"
+  },
+  {
+    "time": "21:03:17",
+    "category": "chat",
+    "content": "User: I think that everyone has more to see. No, no, no, no, no. No, no, no, no, no. | Leo: It seems like you're feeling overwhelmed, Muhammad. Sometimes, it can be hard to see beyond current circumstances. It's okay to seek support, whether it's through friends, family, or professional resources. Remember, even in difficult times, there are ways to connect with others who share similar experiences.",
+    "severity": "info"
+  },
+  {
+    "time": "21:04:45",
+    "category": "chat",
+    "content": "User: be quite | Leo: Alright, Muhammad. Let's focus on finding solutions together. It's important to remember that everyone is facing unique situations and challenges. Stay strong, and know that we're here to support you.",
+    "severity": "info"
+  },
+  {
+    "time": "21:06:17",
+    "category": "chat",
+    "content": "User: He's an Indian woman he is currently hanging | Leo: Thank you for sharing that information, Muhammad. Being an Indian woman experiencing difficulties can certainly be overwhelming. It's crucial to prioritize self-care and find support systems within your community. Here are a few suggestions:\n\n1. **Seek Support Groups**: Many communities offer groups specifically for women dealing with personal issues related to their gender identity or relationship status. They may also host workshops and counseling services.\n\n2. **Professional Help**: Consider consulting a counselor or therapist who specializes in cross-cultural relationships and communication.\n\n3.",
+    "severity": "info"
+  },
+  {
+    "time": "21:08:06",
+    "category": "chat",
+    "content": "User: No, no, that's just a story. We'll do it in the demo. Okay, now don't look at it. I'm explaining it. | Leo: Understood, Muhammad. The demonstration is designed to help you understand various aspects of life, including personal struggles and common coping mechanisms. If you need any further assistance or have additional questions, feel free to come back anytime.",
+    "severity": "info"
+  },
+  {
+    "time": "21:09:06",
+    "category": "chat",
+    "content": "User: So, you can't do that. So, you can't do that. You can't do that. I will do it. We will start the demonstration. Yes. Yes. | Leo: Understood, Muhammad. The demonstration will involve providing practical tips and strategies that you can implement in your own lives. Each session will focus on different types of challenges, helping you manage stress and improve your overall well-being. Let\u2019s begin with the basics. What would you like to know first?",
+    "severity": "info"
+  },
+  {
+    "time": "21:10:16",
+    "category": "chat",
+    "content": "User: On the 22. | Leo: Understood, Muhammad. Thank you for sharing those thoughts. It's great to hear that you're comfortable with the concept and willing to explore new approaches. Let's move forward with the demonstration, focusing on practical tips and strategies to help you manage stress and improve your mental health. If you have any questions or need further clarification, feel free to ask.",
+    "severity": "info"
+  }
+]

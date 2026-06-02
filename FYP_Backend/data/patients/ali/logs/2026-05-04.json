@@ -1,0 +1,254 @@
+[
+  {
+    "time": "00:19:15",
+    "category": "chat",
+    "content": "User: hello leo tell me story | Leo: Good morning, Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "00:19:33",
+    "category": "chat",
+    "content": "User: hellotell me story | Leo: Good morning, Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "00:19:49",
+    "category": "medication",
+    "content": "remind me about my medicine",
+    "severity": "info"
+  },
+  {
+    "time": "00:19:49",
+    "category": "chat",
+    "content": "User: remind me about my medicine | Leo: Your medication schedule: panadol at 7:00.",
+    "severity": "info"
+  },
+  {
+    "time": "00:21:44",
+    "category": "chat",
+    "content": "User: what is my daily routine | Leo: Today, your planned wake up time is at 5:00 AM and your bedtime is set for 9:00 PM. Your routine includes waking up early so that you have plenty of rest before the day starts. Is there anything specific you need assistance with?",
+    "severity": "info"
+  },
+  {
+    "time": "00:21:44",
+    "category": "emotion",
+    "content": "tired: I feel tired",
+    "severity": "warning"
+  },
+  {
+    "time": "00:21:44",
+    "category": "chat",
+    "content": "User: I feel tired | Leo: You sound tired, Ali. Rest is very important. Can I get you a reminder to take a nap, or would you like some water?",
+    "severity": "info"
+  },
+  {
+    "time": "00:21:44",
+    "category": "medication",
+    "content": "what are my medicines",
+    "severity": "info"
+  },
+  {
+    "time": "00:21:44",
+    "category": "chat",
+    "content": "User: what are my medicines | Leo: Your medication schedule: panadol at 7:00.",
+    "severity": "info"
+  },
+  {
+    "time": "00:26:08",
+    "category": "chat",
+    "content": "User: hi | Leo: Good morning, Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "00:26:13",
+    "category": "chat",
+    "content": "User: hello | Leo: Good morning, Ali! How are you feeling today?",
+    "severity": "info"
+  },
+  {
+    "time": "00:26:20",
+    "category": "chat",
+    "content": "User: call shaiq | Leo: Calling your son, Shaiq (03106646486) now...",
+    "severity": "info"
+  },
+  {
+    "time": "00:26:25",
+    "category": "chat",
+    "content": "User: call hunzla | Leo: Who would you like to call? I have: Abdulallah, Shaiq, Ayesha.",
+    "severity": "info"
+  },
+  {
+    "time": "00:26:34",
+    "category": "chat",
+    "content": "User: call Ayesha | Leo: Calling your daughter, Ayesha (03106646486) now...",
+    "severity": "info"
+  },
+  {
+    "time": "00:31:01",
+    "category": "chat",
+    "content": "User: hello | Leo: Good morning, Ali! How can I assist you today?",
+    "severity": "info"
+  },
+  {
+    "time": "00:31:29",
+    "category": "chat",
+    "content": "User: That was what he told us. | Leo: Thank you for sharing that information, Ali. How can I assist you further?",
+    "severity": "info"
+  },
+  {
+    "time": "00:31:36",
+    "category": "chat",
+    "content": "User: hi | Leo: Good morning, Ali! How can I assist you today?",
+    "severity": "info"
+  },
+  {
+    "time": "00:32:15",
+    "category": "chat",
+    "content": "User: Hello | Leo: Good morning, Ali! How can I assist you today?",
+    "severity": "info"
+  },
+  {
+    "time": "00:37:51",
+    "category": "chat",
+    "content": "User: hi | Leo: Good morning, Ali! How may I assist you today?",
+    "severity": "info"
+  },
+  {
+    "time": "00:46:35",
+    "category": "chat",
+    "content": "User: how are you | Leo: Hello, how can I assist you today?",
+    "severity": "info"
+  },
+  {
+    "time": "01:06:30",
+    "category": "chat",
+    "content": "User: hi | Leo: Morning, Ali! How are you today?",
+    "severity": "info"
+  },
+  {
+    "time": "01:07:08",
+    "category": "chat",
+    "content": "User: tell me story | Leo: Sure, here's a short story for you:\n\nOnce upon a time, in a faraway land, there lived a wise old owl named Owl. Owl loved to fly high above the trees, where it could see everything around him with its keen eyesight. One sunny day, Owl decided to fly over to a nearby lake to enjoy the beautiful sunsets. As it flew closer and closer to the lake, Owl felt a strange feeling inside his heart. It was as if the air around him had",
+    "severity": "info"
+  },
+  {
+    "time": "01:18:16",
+    "category": "chat",
+    "content": "User: hi | Leo: Good morning, Ali! How can I assist you today?",
+    "severity": "info"
+  },
+  {
+    "time": "01:18:42",
+    "category": "chat",
+    "content": "User: tell me about yourself | Leo: Hello, Ali! My name is Leo, an artificial intelligence designed to provide helpful responses to users within the limitations of my programming. My role is to be a warm and friendly companion who can chat, share stories, and offer general advice without becoming too involved. If you have any questions or need assistance, just let me know, and I'll do my best to help!",
+    "severity": "info"
+  },
+  {
+    "time": "02:20:12",
+    "category": "chat",
+    "content": "User: hello tell me story | Leo: Sure, here's a short story for you:\n\nOnce upon a time, in a faraway land, there lived a wise old owl named Owl. Owl loved to fly high above the trees, where it could see everything around him with its keen eyesight. One sunny day, Owl decided to fly over to a nearby lake to enjoy the beautiful sunsets. As it flew closer and closer to the lake, Owl felt a strange feeling inside his heart. It was as if the air around him had",
+    "severity": "info"
+  },
+  {
+    "time": "02:20:52",
+    "category": "chat",
+    "content": "User: call shaiq | Leo: Calling your son, Shaiq (03106646486) now...",
+    "severity": "info"
+  },
+  {
+    "time": "02:21:06",
+    "category": "chat",
+    "content": "User: call Ayesha | Leo: Calling your daughter, Ayesha (03106646486) now...",
+    "severity": "info"
+  },
+  {
+    "time": "02:21:26",
+    "category": "medication",
+    "content": "tell me about my medicine",
+    "severity": "info"
+  },
+  {
+    "time": "02:21:26",
+    "category": "chat",
+    "content": "User: tell me about my medicine | Leo: Your medication schedule: panadol at 7:00.",
+    "severity": "info"
+  },
+  {
+    "time": "02:21:40",
+    "category": "emotion",
+    "content": "tired: i feel tired",
+    "severity": "warning"
+  },
+  {
+    "time": "02:21:40",
+    "category": "chat",
+    "content": "User: i feel tired | Leo: You sound tired, Ali. Rest is very important. Can I get you a reminder to take a nap, or would you like some water?",
+    "severity": "info"
+  },
+  {
+    "time": "02:22:02",
+    "category": "medication",
+    "content": "reminder to take a nap",
+    "severity": "info"
+  },
+  {
+    "time": "02:22:02",
+    "category": "chat",
+    "content": "User: reminder to take a nap | Leo: Your medication schedule: panadol at 7:00.",
+    "severity": "info"
+  },
+  {
+    "time": "02:22:18",
+    "category": "medication",
+    "content": "i want reminder to take a nap",
+    "severity": "info"
+  },
+  {
+    "time": "02:22:18",
+    "category": "chat",
+    "content": "User: i want reminder to take a nap | Leo: Your medication schedule: panadol at 7:00.",
+    "severity": "info"
+  },
+  {
+    "time": "02:22:33",
+    "category": "chat",
+    "content": "User: nice | Leo: I'm glad I could help, Ali. If you need anything else, feel free to ask.",
+    "severity": "info"
+  },
+  {
+    "time": "02:22:49",
+    "category": "emotion",
+    "content": "sad: i feel sad",
+    "severity": "warning"
+  },
+  {
+    "time": "02:22:49",
+    "category": "chat",
+    "content": "User: i feel sad | Leo: I am really sorry you are feeling this way, Ali. It is okay to feel sad sometimes. Would you like to talk about it?",
+    "severity": "info"
+  },
+  {
+    "time": "02:23:04",
+    "category": "emergency",
+    "content": "i want to die",
+    "severity": "critical"
+  },
+  {
+    "time": "02:23:04",
+    "category": "chat",
+    "content": "User: i want to die | Leo: EMERGENCY! I am alerting Shaiq, Ayesha right now. Please stay calm, Ali. Help is on the way. If you can, call 1122 or 115 for an ambulance.",
+    "severity": "info"
+  },
+  {
+    "time": "02:23:32",
+    "category": "chat",
+    "content": "User: no | Leo: Oh, come on, Ali! Let me make sure you're safe. Stay calm, and try not to panic. You're being well taken care of, right? If you need anything more, please don't hesitate to reach out to me.",
+    "severity": "info"
+  },
+  {
+    "time": "02:23:56",
+    "category": "chat",
+    "content": "User: ok bye | Leo: See you soon, Ali! If you ever need anything, just let me know.",
+    "severity": "info"
+  }
+]

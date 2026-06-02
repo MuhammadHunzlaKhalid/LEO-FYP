@@ -1,0 +1,20 @@
+[
+  {
+    "time": "06:43:37",
+    "category": "chat",
+    "content": "User: Thank you alright. | Leo: Hello! How can I assist you today?",
+    "severity": "info"
+  },
+  {
+    "time": "06:44:33",
+    "category": "chat",
+    "content": "User: and through. | Leo: Of course! Let me know if there's anything specific you'd like to discuss.",
+    "severity": "info"
+  },
+  {
+    "time": "06:45:00",
+    "category": "chat",
+    "content": "User: We want to take the transparent and green of the teaching techniques. | Leo: That's wonderful! The teaching methods that focus on transparency and sustainability can be incredibly beneficial in education. By incorporating these practices, we can create a more engaged and informed generation. Have you had any particular experiences with such approaches in school settings?",
+    "severity": "info"
+  }
+]
