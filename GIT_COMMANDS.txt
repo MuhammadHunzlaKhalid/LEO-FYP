@@ -1,0 +1,70 @@
+# ══════════════════════════════════════════════════════
+#  LEO — GitHub Upload Commands
+#  Run these in order from your terminal (CMD or PowerShell)
+# ══════════════════════════════════════════════════════
+
+# ── STEP 0: One-time git config (agar pehle nahi kiya) ──
+git config --global user.name "MuhammadHunzlaKhalid"
+git config --global user.email "your-email@gmail.com"
+
+
+# ── STEP 1: Go to your LEO root folder ──────────────────
+cd D:\Python\FYP\FYP_Connected
+
+
+# ── STEP 2: Initialize git repo ─────────────────────────
+git init
+
+
+# ── STEP 3: Copy these files into the root folder ───────
+# (manually copy README.md and .gitignore into D:\Python\FYP\FYP_Connected\)
+
+
+# ── STEP 4: Add remote origin ───────────────────────────
+# First create a repo named "LEO" on GitHub (no README, empty repo)
+# Then run:
+git remote add origin https://github.com/MuhammadHunzlaKhalid/LEO.git
+
+
+# ── STEP 5: Stage all files ─────────────────────────────
+git add .
+
+
+# ── STEP 6: Check what will be committed ────────────────
+# (make sure .pt model files are NOT listed here)
+git status
+
+
+# ── STEP 7: First commit ────────────────────────────────
+git commit -m "Initial commit: LEO AI Elderly Care System (FYP 2024-25)"
+
+
+# ── STEP 8: Push to GitHub ──────────────────────────────
+git branch -M main
+git push -u origin main
+
+
+# ══════════════════════════════════════════════════════
+#  FUTURE UPDATES (after making changes)
+# ══════════════════════════════════════════════════════
+git add .
+git commit -m "your message here"
+git push
+
+
+# ══════════════════════════════════════════════════════
+#  TROUBLESHOOTING
+# ══════════════════════════════════════════════════════
+
+# If push is rejected (already has commits on GitHub):
+git pull origin main --allow-unrelated-histories
+git push origin main
+
+# If .pt model files are accidentally staged (too large):
+git rm --cached FYP_Backend/models/*.pt
+git commit -m "Remove large model files from tracking"
+
+# If you get auth errors:
+# Use GitHub Personal Access Token instead of password
+# Settings → Developer settings → Personal access tokens → Generate new token
+# Use that token as your password when git asks

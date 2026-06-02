@@ -1,0 +1,146 @@
+# ══════════════════════════════════════════
+#  LEO — .gitignore
+#  Python Backend + Flutter Frontend
+# ══════════════════════════════════════════
+
+# ── SECRETS & ENV ─────────────────────────
+.env
+.env.*
+*.env
+secrets.json
+config.local.py
+
+# ── PYTHON ────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ── ML MODELS (large files) ───────────────
+*.pt
+*.pth
+*.weights
+*.onnx
+*.pb
+*.h5
+*.pkl
+*.joblib
+models/
+weights/
+checkpoints/
+
+# ── MONGODB ───────────────────────────────
+*.bson
+dump/
+mongo_data/
+
+# ── FLUTTER ───────────────────────────────
+# Build outputs
+FYP_Frontent/build/
+FYP_Frontent/.dart_tool/
+FYP_Frontent/.flutter-plugins
+FYP_Frontent/.flutter-plugins-dependencies
+FYP_Frontent/.packages
+
+# Generated files
+FYP_Frontent/*.g.dart
+FYP_Frontent/**/*.g.dart
+FYP_Frontent/lib/generated/
+
+# iOS
+FYP_Frontent/ios/Pods/
+FYP_Frontent/ios/.symlinks/
+FYP_Frontent/ios/Flutter/Flutter.framework
+FYP_Frontent/ios/Flutter/Flutter.podspec
+
+# Android
+FYP_Frontent/android/.gradle/
+FYP_Frontent/android/local.properties
+FYP_Frontent/android/key.properties
+FYP_Frontent/android/app/google-services.json
+
+# macOS
+FYP_Frontent/macos/Pods/
+FYP_Frontent/macos/.symlinks/
+
+# ── MEDIA & LARGE ASSETS ──────────────────
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.mp3
+*.wav
+test_videos/
+sample_footage/
+
+# ── YOLO / CV OUTPUTS ─────────────────────
+runs/
+outputs/
+detections/
+screenshots/
+safe_zones.json
+
+# ── WINDOWS ───────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# ── macOS ─────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ── IDEs ──────────────────────────────────
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── LOGS ──────────────────────────────────
+*.log
+logs/
+leo_log_*.txt
+
+# ── MISC ──────────────────────────────────
+*.tmp
+*.temp
+*.bak
+*.swp
+~$*
+# ── OLD VERSIONS ────────────────────────────
+V1/
+V2/
