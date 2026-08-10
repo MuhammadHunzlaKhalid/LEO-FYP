@@ -30,7 +30,11 @@
 - [Team](#-team)
 
 ---
+## 🎥 Project Demo
 
+▶️ [**Watch Demo Video (132MB)**](https://github.com/MuhammadHunzlaKhalid/LEO-FYP/releases/download/demo-v1/Video.Project.1.mp4)
+
+Click the link above to download and watch the full project demonstration.
 ## 🧠 Overview
 
 LEO is a full-stack AI home assistant for elderly care, combining computer vision, natural language AI, and real-time health monitoring into a unified system. It is designed for deployment in a home environment where an elderly person lives — optionally alone — and a caregiver or family member needs remote visibility and emergency alerting.
